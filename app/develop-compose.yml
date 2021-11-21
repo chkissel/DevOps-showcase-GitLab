@@ -1,0 +1,61 @@
+version: '2.0'
+
+services:
+    frontend:
+        build: ./frontend
+        tty: true
+        ports:
+            - '80:8080'
+
+    backend1:
+        build: ./logic
+        tty: true
+        volumes:
+            - /home:/app/static
+        ports:
+            - '5000:5000'
+    backend2:
+        build: ./logic
+        tty: true
+        volumes:
+            - /home:/app/static
+        ports:
+            - '5001:5000'
+
+    loadbalancer:
+        build: ./load_balancer
+        tty: true
+        links:
+            - backend1
+            - backend2
+        ports:
+            - '3000:80'
+
+    prometheus:
+        image: prom/prometheus:latest
+        container_name: prometheus
+        ports:
+            - 9090:9090
+        command:
+            - --config.file=/etc/prometheus/prometheus.yml
+        volumes:
+            - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+        depends_on:
+            - cadvisor
+
+    cadvisor:
+        image: google/cadvisor:latest
+        container_name: cadvisor
+        ports:
+            - 8080:8080
+        volumes:
+            - /:/rootfs:ro
+            - /var/run:/var/run:rw
+            - /sys:/sys:ro
+            - /var/lib/docker/:/var/lib/docker:ro
+        depends_on:
+            - frontend
+            - backend1
+            - backend2 
+            - loadbalancer
+    

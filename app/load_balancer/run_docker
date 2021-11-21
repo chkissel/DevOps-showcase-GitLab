@@ -1,0 +1,1 @@
+docker container run --name loadbalancer -p 3000:80 nginxbalancer
