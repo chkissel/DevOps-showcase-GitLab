@@ -3,6 +3,8 @@
 ### Onboarding
 Entrypoint to my infrastructure is a **GitLab repository**, and the **.gitlab-ci.yml file** forms the core of my automation process. From GitLab the application is deployed into two environments - test and production. While the production environment represents a **continuously running server**, test environment should only be allocated and set up if needed. **DigitalOcean** is chosen as the cloud service provider in this solution.
 
+![alt text](./assets/cicd.jpeg)
+
 ### High level file structure
 ```bash
 .
@@ -92,10 +94,10 @@ docker-compose -f ./app/docker-compose.yml up -d
 root@machine-one:$ docker ps
 CONTAINER ID        IMAGE                          PORTS                        NAMES
 2d773ea16597        google/cadvisor:latest         0.0.0.0:8080->8080/tcp       cadvisor
-c8972a5f2743        app_frontend                   0.0.0.0:80->8080/tcp         app_frontend_1
-776010a6f75a        app_loadbalancer               0.0.0.0:3000->80/tcp         app_loadbalancer_1
-95a6b0c46548        app_backend2                   0.0.0.0:5001->5000/tcp       app_backend2_1
-ab362ee8f982        app_backend1                   0.0.0.0:5000->5000/tcp       app_backend1_1
+c8972a5f2743        app_frontend                   0.0.0.0:80->8080/tcp         app_frontend
+776010a6f75a        app_loadbalancer               0.0.0.0:3000->80/tcp         app_loadbalancer
+95a6b0c46548        app_backend2                   0.0.0.0:5001->5000/tcp       app_backend2
+ab362ee8f982        app_backend1                   0.0.0.0:5000->5000/tcp       app_backend1
 862fc49ab3f6        prom/prometheus:latest         0.0.0.0:9090->9090/tcp       prometheus
 ```
 
@@ -176,7 +178,6 @@ As the test environment does not exist yet, **runner two** has to start a new se
 ### Monitoring
 The containerized application is monitored during runtime by **cAdvisor** (short for container Advisor) in combination with **Prometheus**. cAdviser analyzes and exposes resource usage and performance data from running containers. cAdvisor provides Prometheus metrics out of the box. Stats and graphs for specific Docker containers can be explored in the browser under **"http://localhost:8080/docker/container-name"** (e.g. http://machine_one_IP:8080/docker/frontend). Both monitoring tools, cAdvisor and Prometheus, are run together with the application in the docker-compose, so they share a network.
 
-### Architecture
-![alt text](./assets/cicd.jpeg)
+
 
 
